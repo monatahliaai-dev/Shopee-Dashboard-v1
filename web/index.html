@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BantuSeller Finance Dashboard</title>
+  <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./assets/css/fontawesome.min.css">
+  <link rel="stylesheet" href="./assets/css/custom.css">
+  <style>
+    :root{--brand:#0d6efd;--good:#198754;--bad:#dc3545;--soft:#f8f9fa}
+    body{background:#f3f5f8}
+    .stat-card{border:none;border-radius:18px;box-shadow:0 8px 24px rgba(15,23,42,.08)}
+    .stat-card .label{font-size:13px;opacity:.9}
+    .stat-card .value{font-size:22px;font-weight:700;line-height:1.15;white-space:nowrap}
+    .metric-note{font-size:12px;opacity:.9}
+    .section{display:none}
+    .section.active{display:block}
+    .panel{border:none;border-radius:18px;box-shadow:0 8px 24px rgba(15,23,42,.08)}
+    .table-wrap{max-height:65vh;overflow:auto}
+    .table thead th{position:sticky;top:0;background:#fff;z-index:1;white-space:nowrap}
+    .nav-pill{display:block;padding:10px 14px;border-radius:12px;color:#0b2545;text-decoration:none;margin-bottom:6px}
+    .nav-pill:hover,.nav-pill.active{background:#e9f2ff;color:#0d6efd}
+    .small-muted{font-size:12px;color:#6c757d}
+    .badge-soft-warning{background:#fff3cd;color:#664d03}
+    .badge-soft-danger{background:#f8d7da;color:#842029}
+    .badge-soft-success{background:#d1e7dd;color:#0f5132}
+    .brand-box{padding:0 28px 20px}
+    .brand-title{font-weight:700;color:#0b2545}
+    .brand-sub{font-size:12px;color:#6c757d}
+    .chart-short{height:240px;max-height:240px}
+    @media(max-width:1000px){.top-actions{margin-top:12px}.chart-short{height:180px}}
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark text-light can_have_sidenav">
+  <div class="container-fluid navbar-nav">
+    <div class="row w-100 align-items-center">
+      <div class="col-6 col-lg-4 ps-4 pe-4">
+        <button class="btn btn-nav" onclick="toggle_sidenav()"><i class="fa fa-bars"></i></button>
+      </div>
+      <div class="col-lg-4 d-none d-lg-block text-center fw-bold">BantuSeller • Pembukuan Shopee</div>
+      <div class="col-6 col-lg-4 ps-4 pe-4 d-flex justify-content-end align-items-center gap-2">
+        <span class="small text-white-50 d-none d-md-inline">Data lokal</span>
+        <select id="store" class="form-select form-select-sm" style="max-width:170px"></select>
+        <select id="month" class="form-select form-select-sm" style="max-width:180px"></select>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div id="sidenav">
+  <div class="brand-box">
+    <div class="brand-title">BantuSeller Finance</div>
+    <div class="brand-sub">Shopee • Hiban Store</div>
+  </div>
+  <a href="#" class="nav-pill active" data-tab="dash"><i class="fa fa-chart-pie me-2 side-icon"></i>Dashboard</a>
+  <a href="#" class="nav-pill" data-tab="bulan"><i class="fa fa-calendar me-2 side-icon"></i>Ringkasan Bulanan</a>
+  <a href="#" class="nav-pill" data-tab="produk"><i class="fa fa-box me-2 side-icon"></i>Produk</a>
+  <a href="#" class="nav-pill" data-tab="sku"><i class="fa fa-triangle-exclamation me-2 side-icon"></i>SKU Belum HPP</a>
+  <a href="#" class="nav-pill" data-tab="order"><i class="fa fa-receipt me-2 side-icon"></i>Order</a>
+  <a href="#" class="nav-pill" data-tab="upload"><i class="fa fa-upload me-2 side-icon"></i>Upload Data</a>
+</div>
+
+<div id="content" class="can_have_sidenav">
+  <div class="p-4 p-lg-5">
+    <div class="row mb-4 align-items-end">
+      <div class="col-lg-8">
+        <h3 class="mb-1">Pembukuan Shopee</h3>
+        <div class="text-muted">Basis hitung: dana masuk - HPP - biaya iklan. Tampilan pakai template Bootstrap Finance Dashboard.</div>
+      </div>
+      <div class="col-lg-4 text-lg-end top-actions">
+        <span id="summaryChip" class="badge badge-soft-success">Siap</span>
+      </div>
+    </div>
+
+    <section id="dash" class="section active">
+      <div class="row">
+        <div class="col-lg-3 col-md-6 p-2">
+          <div class="stat-card bg-warning p-4 text-white">
+            <div class="label">Dana Masuk</div>
+            <div id="kDana" class="value">Rp0</div>
+            <div id="kDanaNote" class="metric-note">Akumulasi periode</div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6 p-2">
+          <div class="stat-card bg-danger p-4 text-white">
+            <div class="label">HPP</div>
+            <div id="kHpp" class="value">Rp0</div>
+            <div id="kHppNote" class="metric-note">Akumulasi periode</div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6 p-2">
+          <div class="stat-card bg-primary p-4 text-white">
+            <div class="label">Biaya Iklan</div>
+            <div id="kAds" class="value">Rp0</div>
+            <div id="kAdsNote" class="metric-note">Akumulasi periode</div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6 p-2">
+          <div class="stat-card bg-info p-4 text-white">
+            <div class="label">Laba Bersih Est.</div>
+            <div id="kProfit" class="value">Rp0</div>
+            <div id="kProfitNote" class="metric-note">Akumulasi periode</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-2">
+        <div class="col-lg-8 p-2">
+          <div class="card panel">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                <div>
+                  <div class="font-24 fw-bold mb-0">Trend Bulanan</div>
+                  <div class="text-muted">Dana masuk, HPP, iklan, laba bersih</div>
+                </div>
+              </div>
+              <div class="chart-short"><canvas id="profitChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 p-2">
+          <div class="card panel h-100">
+            <div class="card-body">
+              <div class="font-24 fw-bold mb-1">Metrik Pilihan</div>
+              <div class="text-muted mb-3">Periode aktif</div>
+              <div class="border rounded p-3 mb-3 bg-light">
+                <div class="small-muted">Margin Bersih</div>
+                <div id="kMargin" class="font-22 fw-bold">0%</div>
+              </div>
+              <div class="border rounded p-3 mb-3 bg-light">
+                <div class="small-muted">ROAS Ads</div>
+                <div id="kRoas" class="font-22 fw-bold">0</div>
+              </div>
+              <div class="border rounded p-3 mb-3 bg-light">
+                <div class="small-muted">Order Selesai</div>
+                <div id="kOrders" class="font-22 fw-bold">0</div>
+              </div>
+              <div class="border rounded p-3 bg-light">
+                <div class="small-muted">Item Terjual</div>
+                <div id="kItems" class="font-22 fw-bold">0</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="bulan" class="section">
+      <div class="card panel">
+        <div class="card-body">
+          <div class="font-24 fw-bold mb-3">Ringkasan Bulanan</div>
+          <div class="table-wrap"><table class="table table-hover align-middle" id="tSummary"></table></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="produk" class="section">
+      <div class="card panel">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div class="font-24 fw-bold">Produk</div>
+            <input id="qProd" class="form-control" placeholder="Cari SKU / produk..." style="max-width:320px">
+          </div>
+          <div class="table-wrap"><table class="table table-hover align-middle" id="tProd"></table></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sku" class="section">
+      <div class="card panel">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div>
+              <div class="font-24 fw-bold">SKU Belum HPP</div>
+              <div class="text-muted">Perlu dilengkepan supaya laba akurat.</div>
+            </div>
+            <span id="skuCount" class="badge badge-soft-warning">0 SKU</span>
+          </div>
+          <div class="alert alert-light border mb-3">
+            <div class="row g-2 align-items-end">
+              <div class="col-md-3"><label class="form-label small-muted">SKU</label><input id="hppSku" class="form-control" readonly></div>
+              <div class="col-md-4"><label class="form-label small-muted">Produk</label><input id="hppNama" class="form-control"></div>
+              <div class="col-md-2"><label class="form-label small-muted">Varian</label><input id="hppVarian" class="form-control"></div>
+              <div class="col-md-2"><label class="form-label small-muted">HPP</label><input id="hppValue" type="number" min="1" class="form-control" placeholder="contoh 25000"></div>
+              <div class="col-md-1"><button id="saveHpp" class="btn btn-primary w-100">Save</button></div>
+            </div>
+            <div id="hppMsg" class="small-muted mt-2">Klik baris SKU → isi HPP → Save.</div>
+          </div>
+          <div class="table-wrap"><table class="table table-hover align-middle" id="tSku"></table></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="order" class="section">
+      <div class="card panel">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div class="font-24 fw-bold">Order Terakhir</div>
+            <input id="qOrder" class="form-control" placeholder="Cari order / SKU..." style="max-width:320px">
+          </div>
+          <div class="table-wrap"><table class="table table-hover align-middle" id="tOrder"></table></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="upload" class="section">
+      <div class="card panel mb-3">
+        <div class="card-body">
+          <div class="font-24 fw-bold mb-1">Upload Data</div>
+          <div class="text-muted mb-3">Pilih toko → upload file order/income/ads Excel/CSV → otomatis rebuild.</div>
+          <div class="row g-2 align-items-end">
+            <div class="col-md-3"><label class="form-label small-muted">Toko</label><select id="uploadStore" class="form-select"></select></div>
+            <div class="col-md-7"><label class="form-label small-muted">File</label><input id="uploadFiles" type="file" multiple class="form-control" accept=".xlsx,.xls,.csv"></div>
+            <div class="col-md-2"><button id="uploadBtn" class="btn btn-primary w-100">Upload</button></div>
+          </div>
+          <div id="uploadMsg" class="small-muted mt-2">File disimpen di folder toko masing-masing.</div>
+        </div>
+      </div>
+      <div class="card panel">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div class="font-24 fw-bold">Riwayat Upload</div>
+            <span id="uploadCount" class="badge badge-soft-success">0 file</span>
+          </div>
+          <div class="table-wrap"><table class="table table-hover align-middle" id="tUploadLog"></table></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="./assets/js/bootstrap.bundle.min.js"></script>
+<script src="./assets/js/chart.min.js"></script>
+<script>
+let D, chart;
+const rp=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(+n||0);
+const num=n=>new Intl.NumberFormat('id-ID').format(+n||0);
+const pct=n=>(+n||0).toFixed(1)+'%';
+const fixed=n=>(+n||0).toFixed(2);
+function sumRows(rows){const s={}; for(const r of rows) for(const k in r) s[k]=(s[k]||0)+(+r[k]||0); return s}
+function table(el, rows, cols){el.innerHTML='<thead><tr>'+cols.map(c=>`<th>${c[0]}</th>`).join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+cols.map(c=>`<td>${c[2]?c[2](r[c[1]],r):(r[c[1]]??'')}</td>`).join('')+'</tr>').join('')+'</tbody>'}
+function storeRows(rows){const s=store.value; return s==='ALL'?rows:rows.filter(x=>x.Toko===s)}
+function getRows(){const m=month.value, rows=storeRows(D.summary); return m==='ALL'?rows:rows.filter(x=>x.Bulan===m)}
+function updateKpi(){
+  const rows=getRows(), s=sumRows(rows), profit=s['Laba Bersih Estimasi']||0;
+  kDana.textContent=rp(s.Dana_Masuk); kHpp.textContent=rp(s.HPP); kAds.textContent=rp(s.Biaya_Iklan); kProfit.textContent=rp(profit);
+  kMargin.textContent=pct((s['Laba Bersih Estimasi']||0)/(s.Dana_Masuk||1)*100);
+  kRoas.textContent=fixed((s.Omzet_Ads||0)/(s.Biaya_Iklan||1));
+  kOrders.textContent=num(s.Order_Selesai); kItems.textContent=num(s.Item_Terjual);
+  kProfit.parentElement.classList.remove('bg-info','bg-success','bg-danger');
+  kProfit.parentElement.classList.add(profit>=0?'bg-success':'bg-danger');
+  summaryChip.textContent = `${rows.length} bulan aktif`;
+  summaryChip.className = 'badge ' + (profit>=0?'badge-soft-success':'badge-soft-danger');
+}
+function drawChart(){
+  if(chart) chart.destroy();
+  const rows=storeRows(D.summary), months=[...new Set(rows.map(x=>x.Bulan))].sort();
+  const byMonth=months.map(m=>sumRows(rows.filter(x=>x.Bulan===m)));
+  chart = new Chart(document.getElementById('profitChart').getContext('2d'), {
+    type:'bar',
+    data:{
+      labels:months,
+      datasets:[
+        {label:'Dana Masuk', data:byMonth.map(x=>x.Dana_Masuk), backgroundColor:'#f0ad4e'},
+        {label:'HPP', data:byMonth.map(x=>x.HPP), backgroundColor:'#dc3545'},
+        {label:'Iklan', data:byMonth.map(x=>x.Biaya_Iklan), backgroundColor:'#0d6efd'},
+        {label:'Laba Bersih', data:byMonth.map(x=>x['Laba Bersih Estimasi']), backgroundColor:'#198754'}
+      ]
+    },
+    options:{responsive:true, maintainAspectRatio:false, plugins:{tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${rp(c.raw)}`}}}, scales:{x:{ticks:{maxRotation:0,minRotation:0}},y:{ticks:{callback:v=>new Intl.NumberFormat('id-ID').format(v)}}}}
+  })
+}
+function renderTables(){
+  const summary=storeRows(D.summary), products=storeRows(D.products), unmatched=storeRows(D.unmatched), orders=storeRows(D.orders);
+  const logRows=(window.UPLOG||[]).filter(r=>uploadStore?.value? r.toko===uploadStore.value : true);
+  table(tSummary,summary,[['Toko','Toko'],['Bulan','Bulan'],['Order','Order_Selesai',num],['Item','Item_Terjual',num],['Dana Masuk','Dana_Masuk',rp],['HPP','HPP',rp],['Iklan','Biaya_Iklan',rp],['Laba Bersih','Laba Bersih Estimasi',rp],['Margin','Margin Bersih %',pct],['ROAS','ROAS Ads',fixed]]);
+  const prodCols=[['Toko','Toko'],['SKU','SKU'],['Produk','Nama Produk'],['Qty','Qty',num],['Omzet','Omzet',rp],['HPP','HPP',rp],['Laba Kotor','Laba Kotor',rp]];
+  const orderCols=[['Toko','Toko'],['Bulan','Bulan'],['Order','No Pesanan'],['SKU','SKU'],['Produk','Nama Produk'],['Qty','Qty',num],['Omzet','Dibayar Pembeli',rp],['HPP','HPP Total',rp]];
+  const skuCols=[['Toko','Toko'],['SKU','SKU'],['Produk','Nama Produk'],['Varian','Varian'],['Qty','Qty',num],['Omzet','Omzet',rp]];
+  const logCols=[['Waktu','waktu'],['Toko','toko'],['File','file']];
+  table(tProd,products,prodCols); table(tSku,unmatched,skuCols); table(tOrder,orders,orderCols); table(tUploadLog,logRows,logCols);
+  uploadCount.textContent=`${num(logRows.length)} file`;
+  skuCount.textContent=`${num(unmatched.length)} SKU`;
+  [...tSku.querySelectorAll('tbody tr')].forEach((tr,i)=>tr.onclick=()=>pickSku(unmatched[i]));
+  qProd.oninput=()=>{const q=qProd.value.toLowerCase(); table(tProd,products.filter(r=>`${r.Toko} ${r.SKU} ${r['Nama Produk']}`.toLowerCase().includes(q)),prodCols)};
+  qOrder.oninput=()=>{const q=qOrder.value.toLowerCase(); table(tOrder,orders.filter(r=>`${r.Toko} ${r.SKU} ${r['Nama Produk']} ${r['No Pesanan']}`.toLowerCase().includes(q)),orderCols)};
+}
+function pickSku(r){hppSku.value=r.SKU||''; hppNama.value=r['Nama Produk']||''; hppVarian.value=r.Varian||''; hppValue.value=''; hppMsg.textContent='Isi HPP kanggo '+hppSku.value}
+async function refreshData(){
+  D=await fetch('data.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json());
+  const log=await fetch('/api/upload-log?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json());
+  window.UPLOG=log.rows||[];
+  render()
+}
+async function uploadData(){
+  if(!uploadFiles.files.length){uploadMsg.textContent='Pilih file heula.'; return}
+  uploadBtn.disabled=true; uploadMsg.textContent='Uploading + rebuild...';
+  const fd=new FormData(); fd.append('store', uploadStore.value); [...uploadFiles.files].forEach(f=>fd.append('files',f));
+  const out=await fetch('/api/upload',{method:'POST',body:fd}).then(r=>r.json());
+  uploadBtn.disabled=false;
+  if(!out.ok){uploadMsg.textContent='Gagal: '+out.error; return}
+  window.UPLOG=out.log||window.UPLOG||[];
+  uploadFiles.value=''; uploadMsg.textContent=`Berhasil upload ${out.saved.length} file.`; await refreshData();
+}
+async function saveHppRow(){
+  const hpp=+hppValue.value;
+  if(!hppSku.value || hpp<=0){hppMsg.textContent='SKU/HPP teu valid'; return}
+  saveHpp.disabled=true; hppMsg.textContent='Nyimpen...';
+  const res=await fetch('/api/hpp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rows:[{sku:hppSku.value,nama:hppNama.value,varian:hppVarian.value,hpp}]})});
+  const out=await res.json();
+  if(!out.ok){hppMsg.textContent='Gagal: '+out.error; saveHpp.disabled=false; return}
+  D=await fetch('data.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json());
+  drawChart(); renderTables(); updateKpi(); saveHpp.disabled=false; hppMsg.textContent=`Berhasil. Added ${out.added}, updated ${out.updated}.`;
+}
+function render(){
+  const stores=[...new Set(D.summary.map(x=>x.Toko))].sort();
+  store.innerHTML='<option value="ALL">Semua Toko</option>'+stores.map(x=>`<option value="${x}">${x}</option>`).join('');
+  uploadStore.innerHTML=stores.map(x=>`<option value="${x}">${x}</option>`).join('');
+  month.innerHTML='<option value="ALL">Semua Bulan</option>'+[...new Set(D.summary.map(x=>x.Bulan))].sort().map(x=>`<option value="${x}">${x}</option>`).join('');
+  month.onchange=()=>{updateKpi(); renderTables()};
+  store.onchange=()=>{drawChart(); renderTables(); updateKpi()};
+  uploadStore.onchange=renderTables;
+  saveHpp.onclick=saveHppRow; uploadBtn.onclick=uploadData;
+  drawChart(); renderTables(); updateKpi();
+}
+function toggle_sidenav(){
+  const nav=document.getElementById('sidenav');
+  nav.style.left = nav.style.left==='0px' ? '-250px' : '0px';
+}
+document.querySelectorAll('[data-tab]').forEach(a=>a.onclick=e=>{
+  e.preventDefault();
+  document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+  a.classList.add('active');
+  document.getElementById(a.dataset.tab).classList.add('active');
+});
+Promise.all([
+  fetch('data.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()),
+  fetch('/api/upload-log?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json())
+]).then(([d,log])=>{D=d; window.UPLOG=log.rows||[]; render()}).catch(e=>{summaryChip.textContent='Data gagal dimuat'; summaryChip.className='badge badge-soft-danger'; console.error(e)});
+</script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+body {
+    background-color: #f2f2f2;
+    min-height: 97vh;
+}
+
+/************ sidenav *********/
+
+#sidenav {
+    height: 100%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background: linear-gradient(180deg, rgba(227, 229, 241, 1) 0%, rgba(182, 206, 230, 1) 100%);
+    transition: 0.5s;
+    padding-top: 30px;
+    width: 250px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+#sidenav a {
+    padding: 8px 13px 13px 28px;
+    text-decoration: none;
+    font-size: 16px;
+    color: #030f37;
+    display: block;
+    transition: 0.3s;
+    overflow-x: hidden;
+}
+
+#sidenav a:hover {
+    color: #007cff;
+}
+
+.dropdown-container {
+    display: block;
+    padding-left: 40px;
+}
+
+.dropdown-btn::after {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: "\f0d7";
+    position: absolute;
+    right: 25px;
+    top: 5px;
+    color: #030f37;
+}
+
+.this-page {
+    color: #0d6efd !important;
+}
+
+.side-icon {
+    color: #423a8e;
+}
+
+.can_have_sidenav {
+    margin-left: 250px;
+    transition: 0.5s;
+}
+
+/************ content *********/
+
+#content {
+    min-height: 97vh;
+}
+
+/************ resoinsive *********/
+
+@media screen and (min-width: 1000px) {
+    #content {
+        margin-left: 250px;
+    }
+
+    #sidenav {
+        left: 0;
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    #sidenav {
+        left: -250px;
+        top: 57px;
+    }
+
+    .can_have_sidenav {
+        margin-left: 0 !important;
+    }
+
+    .mobile-nav-2 {
+        position: absolute;
+        left: 25%;
+    }
+
+    .mobile-nav-3 {
+        position: absolute;
+        right: 25%;
+    }
+
+    .mobile-nav-4 {
+        position: absolute;
+        right: 1.5rem;
+    }
+}
+
+/************ floating menu *********/
+
+#floating-menu {
+    position: fixed;
+    top: 40%;
+    right: 0;
+    border-radius: 20px;
+    background-color: #1655a2;
+    padding: 10px;
+}
+
+#floating-menu a {
+    color: #fff;
+}
+
+/************ top nav *********/
+
+.btn-nav {
+    color: #909090;
+    background-color: #3f3f40;
+    border-radius: 50%;
+    padding: 10px 11px 5px 11px;
+}
+
+.profile-img {
+    border-radius: 50%;
+    border: #a0a0a1 solid 1px;
+}
+
+.nav-badge {
+    border-radius: 50%;
+    top: 5px !important;
+    font-size: 8px;
+    padding: 5px 6px 5px 6px;
+}
+
+.btn-nav:hover {
+    color: #d5d5d5;
+}
+
+.nav-search {
+    background-color: #4f5050;
+    border-radius: 20px;
+    color: #3f3f40;
+    width: 60%;
+    display: inline-flex;
+    margin-left: 1vw;
+}
+
+.search-input {
+    background-color: #4f5050;
+    border: none;
+    border-radius: 20px;
+}
+
+.search-input::placeholder {
+    color: #f0f0f0;
+}
+
+.search-input:hover, .search-input:focus {
+    background-color: #4f5050;
+    border: none;
+    box-shadow: none;
+}
+
+.navbar-nav .dropdown-menu {
+    position: absolute;
+}
+
+/************ footer *********/
+
+footer {
+    background-color: rgba(0, 0, 0, 0.1)
+}
+
+/************ fonts *********/
+
+.font-12 {
+    font-size: 12px;
+}
+
+.font-14 {
+    font-size: 14px;
+}
+
+.font-16 {
+    font-size: 16px;
+}
+
+.font-17 {
+    font-size: 17px;
+}
+
+.font-18 {
+    font-size: 18px;
+}
+
+.font-19 {
+    font-size: 19px;
+}
+
+.font-20 {
+    font-size: 20px;
+}
+
+.font-21 {
+    font-size: 21px;
+}
+
+.font-22 {
+    font-size: 22px;
+}
+
+.font-23 {
+    font-size: 23px;
+}
+
+.font-24 {
+    font-size: 24px;
+}
+
+/************ keytables *********/
+
+table.dataTable tbody th.focus, table.dataTable tbody td.focus {
+    box-shadow: inset 0 0 1px 2px #3f42ff
+}
+
+div.dtk-focus-alt table.dataTable tbody th.focus, div.dtk-focus-alt table.dataTable tbody td.focus {
+    box-shadow: inset 0 0 1px 2px #ff8b33
+}

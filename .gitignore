@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Data files (exclude Excel/CSV source data)
+*.xlsx
+*.xls
+*.csv
+!hpp.xlsx
+
+# Upload logs
+upload_log.json
+
+# OS
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Output
+web/data.json
+
+# Uploaded files
+royal_abiya/uploaded/
+hiban_signature/uploaded/
